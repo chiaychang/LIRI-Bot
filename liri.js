@@ -1,22 +1,33 @@
 var command = process.argv[2];
+var input = process.argv.slice(3).join();
+var fs = require("fs");
+// console.log(input);
 
-if (command == "my-tweets") {
-    console.log("");
-    console.log("============ Tweets from JOY! ^(#｀∀´)_Ψ････・･†_(ﾟｰﾟ*)β =======================");
-    console.log("");
-    myTweets();
-} else if (command == "spotify-this-song") {
-    console.log("");
-    console.log("============ Spotify! ♪（＊＾ω＾）♪♪♪ ｡+ﾟ.。(人´∀｀)．☆．。．:*･°♪♪===============");
-    console.log("");
-    spotifySearch();
-} else if (command == "movie-this") {
-    console.log("");
-    console.log("============ Movie Time!゜☆ ♡ ♡ *ヾ(⺣◡⺣)_且且_ヾ(‘∀｀=ヽ)※．；，゜☆ ============");
-    console.log("");
-    omdbSearch();
-}
 
+    function liriInitiate() {
+        if (command == "my-tweets") {
+            console.log("");
+            console.log("============ Tweets from JOY! ^(#｀∀´)_Ψ････・･†_(ﾟｰﾟ*)β ====================");
+            console.log("");
+            myTweets();
+        } else if (command == "spotify-this-song") {
+            console.log("");
+            console.log("============ Spotify! ♪（＊＾ω＾）♪♪♪ ｡+ﾟ.。(人´∀｀)．☆．。．:*･°♪♪============");
+            console.log("");
+            spotifySearch();
+        } else if (command == "movie-this") {
+            console.log("");
+            console.log("============ Movie Time!゜☆ ♡ ♡ *ヾ(⺣◡⺣)_且且_ヾ(‘∀｀=ヽ)※．；，゜☆ =========");
+            console.log("");
+            omdbSearch();
+        } else if (command == "doWhatever") {
+            console.log("");
+            console.log("============ Take a Chance!(*’▽’)ノ＾—==ΞΞΞ☆");
+            doWhatever();
+        }
+    }
+
+liriInitiate();
 
 // my-tweets 
 function myTweets() {
@@ -46,12 +57,11 @@ function spotifySearch() {
 
     var spotify = require('spotify');
 
-    var song = process.argv.slice(3).join();
-    if (!process.argv[3]) {
-        song = "White Tiger";
+    if (!input){
+    	input = "The Sign Ace of Base";
     }
 
-    spotify.search({ type: 'track', query: song }, function(err, data) {
+    spotify.search({ type: 'track', query: input }, function(err, data) {
         if (err) {
             console.log('Error occurred: ' + err);
         } else if (!err) {
@@ -82,9 +92,13 @@ function spotifySearch() {
 function omdbSearch() {
 
     var request = require("request");
-    var movieName = process.argv.slice(3);
-    var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&r=json";
-    var rottenTomatosURL = "https://www.rottentomatoes.com/m/" + process.argv.slice(3).join("_");
+
+    if (!input){
+    	input = "mr,nobody";
+    }
+
+    var queryUrl = "http://www.omdbapi.com/?t=" + input + "&y=&plot=short&r=json";
+    var rottenTomatosURL = "https://www.rottentomatoes.com/m/" + input.split(",").join("_");
     // if (!process.argv[3]) {
     //     movieName = "mr nobody";
     //     rottenTomatosURL = "https://www.rottentomatoes.com/m/mr_nobody";
@@ -97,10 +111,10 @@ function omdbSearch() {
             var result = JSON.parse(body);
 
             console.log("* Title: " + result.Title);
-            console.log("* Year: " + result.Year); 
+            console.log("* Year: " + result.Year);
             console.log("* IMDB Rating: " + result.imdbRating);
-            console.log("* Country: " + result.Country); 
-            console.log("* Language: " + result.Language); 
+            console.log("* Country: " + result.Country);
+            console.log("* Language: " + result.Language);
             console.log("* Plot: " + result.Plot);
             console.log("* Actors: " + result.Actors);
             console.log("* Rotten Tomatos Rating: " + result.Ratings[1].Value);
@@ -112,5 +126,17 @@ function omdbSearch() {
 
 // do-what-it-says
 function doWhatever() {
+   
+    fs.readFile("random.txt", "utf8", function(error, data) {
+        var dataArr = data.split(",");
+        // console.log(dataArr);
+        var action = dataArr[Math.floor(Math.random() * dataArr.length)].split("*"); 
+        // console.log(action); 
+        command = action[0];
+        input = action[1].split(" ").join(",");
+        liriInitiate();
+    });
 
 }
+
+
